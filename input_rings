@@ -1,0 +1,32 @@
+#!/bin/bash
+
+number="1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20"
+
+#basis_file=GaO-ST${i}.xyz
+potential_file=GTH_POTENTIALS
+template_file=temp.in
+input_file=rings.in
+vector_file=vect.txt
+subdir=data
+option_files=options
+
+for i in $number ; do
+    work_dir=number_st${i}
+    subdir='data'
+    if [ ! -d $work_dir ] ; then
+        mkdir -p "$work_dir/$subdir"
+    else
+        rm -r $work_dir/*
+    fi
+    line=${i}
+    var1=$(awk -v line="$line" 'NR==line {print $2}' $vector_file);
+    var2=$(awk -v line="$line" 'NR==line {print $3}' $vector_file); 
+    var3=$(awk -v line="$line" 'NR==line {print $4}' $vector_file); 
+    sed -e "s/numberst/${i}/g" \
+        -e "s/LatA/$var1/g" \
+        -e "s/LatB/$var2/g" \
+        -e "s/LatC/$var3/g" \
+        $template_file > $work_dir/$input_file
+    cp  /Users/chaiyawat/Library/CloudStorage/OneDrive-UniversityCollegeLondon/Lammps_MQ/Sample_CR1_Nov/Rings_analysis_CR1/structure_xyz/GaO_st${i}.xyz $work_dir/$subdir
+    cp $option_files $work_dir
+done
